@@ -50,20 +50,29 @@ dif = abs_1 - abs_2
 
 // criando o filtro passa faixa
 Hk1 = [];
-Hk1 = [Hk1 zeros(1,3744)];
+// Hk1 = [Hk1 zeros(1,3744)];
 //passo 2, a resposta em frequência é unitária de 0 Hz até 18Hz
-Hk1 = [Hk1 ones(1,6)];
+Hk1 = [Hk1 ones(1,12)];
 //passo 3, a resposta em frequência é nula de 15Hz até 1250Hz;
-Hk1 = [Hk1 zeros(1,3744)];
+Hk1 = [Hk1 zeros(1,3738)];
 //passo 4, construímos o vetor Hk1 usando uma cópia refletida do mesmo
 Hk1 = [Hk1 flipdim(Hk1,2)];
 
-Yk_1 = X_1.*Hk1;
-//Yk_2 = Xk_2.*Hk1;
-y_1 = ifft(Yk_1);
-//y_2 = ifft(Yk_2);
+// Hk2 = [zeros(1,60) ones(1, 12) zeros(1, 7428)];
+Hk2 = [zeros(1,30) ones(1, 6) zeros(1, 3714)];
+Hk2 = [Hk2 flipdim(Hk2,2)];
+
+Hk3 = [zeros(1,333) ones(1, 6) zeros(1, 3411)];
+Hk3 = [Hk3 flipdim(Hk3,2)];
+
+//Yk_1 = X_1.*Hk1;
+Yk_2 = X_1.*Hk2;
+Yk_3 = X_1.*Hk3;
+//y_1 = ifft(Yk_1);
+y_2 = ifft(Yk_2);
+y_3 = ifft(Yk_3);
 
 //plot_graph(x_1);
 //t_plot = linspace(0,2500,7500);
 
-plot2d(y_1);
+plot2d(y_3);
