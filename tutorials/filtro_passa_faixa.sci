@@ -7,7 +7,7 @@ function Hk = filtro_passa_faixa(f_max,f_c_min,f_c_max,num)
        if odd==1
        Hk(length(Hk)+1) = 0    
        end
-       if odd=-1
+       if odd==-1
        Hk = [0 Hk] 
        end
        odd=-odd
@@ -16,9 +16,20 @@ function Hk = filtro_passa_faixa(f_max,f_c_min,f_c_max,num)
        if odd==1
        Hk(length(Hk)) = []    
        end
-       if odd=-1
+       if odd==-1
        Hk(1) = [];
        end
        odd=-odd
     end
 endfunction
+
+BasebandFrequency = 10e3;
+SamplingFrequency = 1e6;
+BufferLength = 200;
+n = 0:(BufferLength - 1);
+BasebandSignal = sin(2*%pi*n / (SamplingFrequency/BasebandFrequency));
+
+
+BasebandDFT = fft(BasebandSignal);
+BasebandDFT_magnitude = abs(BasebandDFT);
+plot(BasebandDFT_magnitude)
