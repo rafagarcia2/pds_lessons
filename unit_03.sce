@@ -8,6 +8,19 @@ f2 = 112;
 w1 = 2*%pi*f1;
 w2 = 2*%pi*f2;
 
+M = 806;
+n = 0:M;
+
+wp1 = %pi/2 - 0.01*%pi;
+ws1 = %pi/2 - 0.001*%pi;
+
+wc1 = (wp1 + ws1)/2;
+
+wp2 = %pi/2 + 0.01*%pi;
+ws2 = %pi/2 + 0.001*%pi;
+
+wc2 = (wp2 + ws2)/2;
+
 //Usaremos agora um laço para simular o comportamento em tempo real do sistema:
 for k=1:7500
 //nosso filtro é representado por uma equação diferença, assim, devemos escolher
@@ -58,21 +71,25 @@ end
 w_0 = 2*%pi*f1 / 1250
 r = 0.95
 
-H(k) = (1-k^-2)/1-2*r*cos(w_0)*k^-1+r^2*k^-2
+//H(k) = (1-k^-2)/1-2*r*cos(w_0)*k^-1+r^2*k^-2
 
-// Hk1 = [Hk1 zeros(1,3744)];
-//passo 2, a resposta em frequência é unitária de 0 Hz até 18Hz
-Hk1 = [Hk1 ones(1,12)];
-//passo 3, a resposta em frequência é nula de 15Hz até 1250Hz;
-Hk1 = [Hk1 zeros(1,3738)];
-//passo 4, construímos o vetor Hk1 usando uma cópia refletida do mesmo
-Hk1 = [Hk1 flipdim(Hk1,2)];
-
+if k ~= f2
+    H(k) = ((sin(wc1 * (k - M/2))/ (%pi * (k - M/2))) - (sin(wc2 * (k - M/2)) / %pi * (k - M/2)))
+else
+    H(k) = 1 
+end
+    
 
 
 end
 
+X_1 = fft(x_1)
+//Yk_1 = X_1.*Hk1;
+Y_1 = X_1.*H;
+//y_1 = ifft(Yk_1);
+y_1 = ifft(Y_1);
+
 //plot(t,y_3)
-plot2d(x_2)
+plot2d(y_1)
 
 
