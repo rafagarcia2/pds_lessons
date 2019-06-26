@@ -8,88 +8,82 @@ f2 = 112;
 w1 = 2*%pi*f1;
 w2 = 2*%pi*f2;
 
-M = 806;
-n = 0:M;
+// coeficientes 
+r = 0.95;
 
-wp1 = %pi/2 - 0.01*%pi;
-ws1 = %pi/2 - 0.001*%pi;
-
-wc1 = (wp1 + ws1)/2;
-
-wp2 = %pi/2 + 0.01*%pi;
-ws2 = %pi/2 + 0.001*%pi;
-
-wc2 = (wp2 + ws2)/2;
+C1 = 2 * r * cos(2*%pi*f_1/1250);
+C2 = 2 * r * cos(2*%pi*f_2/1250);
 
 //Usaremos agora um laço para simular o comportamento em tempo real do sistema:
 for k=1:7500
-//nosso filtro é representado por uma equação diferença, assim, devemos escolher
-//polos e zeros tal que o comportamento do filtro seja como desejamos
-//para um filtro ressonador digital, temos H(z) = (1-z^{-2})/1-2rcos(w_0)z^{-1}+r^2z^{-2}
-//o valor de r determina quão amplificada será a frequência w_0 em relação às demais
-//escolhemos w_0 como sendo a frequência correspondente a f_1, cos(2*%pi*9/1250)
-//para realçar o efeito do filtro, utilizamos 3 filtros iguais em cascata
 
-// primeiro sinal
+    // primeiro sinal
     x_1(k) = sin(w1*k/2500)+sin(w2*k/2500);
     
     // segundo sinal
     x_2 = [3*sin(w1*k*linspace(0,1.5,2500*1.5)) 3*sin(w2*k*linspace(1.5,3,2500*1.5))]
     
     t(k) = k/2500;
+    
+    // filtro para f1 de x_1
     if k==1
-    y_1(k) = x_1(k);
-    y_2(k) = y_1(k);
-    y_3(k) = y_2(k);
+        y_1(k) = x_1(k);
+        y_2(k) = y_1(k);
+        y_3(k) = y_2(k);
     end
     if k==2
-    y_1(k) = x_1(k)+1.8980561*y_1(k-1);
-    y_2(k) = y_1(k)+1.8980561*y_2(k-1);
-    y_3(k) = y_2(k)+1.8980561*y_3(k-1);
+        y_1(k) = x_1(k)+C1*y_1(k-1);
+        y_2(k) = y_1(k)+C1*y_2(k-1);
+        y_3(k) = y_2(k)+C1*y_3(k-1);
     end
     if k>=3
-    y_1(k) = x_1(k)-x_1(k-2)+1.8980561*y_1(k-1)-0.9025*y_1(k-2);
-    y_2(k) = y_1(k)-y_1(k-2)+1.8980561*y_2(k-1)-0.9025*y_2(k-2);
-    y_3(k) = y_2(k)-y_2(k-2)+1.8980561*y_3(k-1)-0.9025*y_3(k-2);
+        y_1(k) = x_1(k)-x_1(k-2)+C1*y_1(k-1)-0.9025*y_1(k-2);
+        y_2(k) = y_1(k)-y_1(k-2)+C1*y_2(k-1)-0.9025*y_2(k-2);
+        y_3(k) = y_2(k)-y_2(k-2)+C1*y_3(k-1)-0.9025*y_3(k-2);
     end
-// para f_2 = 400, temos cos(w_0) = cos(2*%pi*400/1250), e utilizamos apenas um dispositivo
-//if k==1
-//y_1(k) = x_1(k);
-//end
-//if k==2
-//y_1(k) = x_1(k)- 0.8089807*y_1(k-1);
-//end
-//if k>=3
-//y_1(k) = x_1(k)-x_1(k-2)- 0.8089807*y_1(k-1)-0.9025*y_1(k-2);
-//end
+
+    // filtro para f1 de x_1
+    if k==1
+        y2_1(k) = x_1(k);
+    end
+    if k==2
+        y2_1(k) = x_1(k) - C2*y2_1(k-1);
+    end
+    if k>=3
+        y2_1(k) = x_1(k)-x_1(k-2)- C2*y2_1(k-1)-0.9025*y2_1(k-2);
+    end
 
 
-// Aplicando o filtro
-// filtro ressonador digital, temos H(z) = (1-z^{-2})/1-2rcos(w_0)z^{-1}+r^2z^{-2}
-// r = 0.95 -> nos devemos escolher esse valor, se baseando na frequencia que desejamos filtrar
-// w_0 = 2*%pi*f1 / 1250
-w_0 = 2*%pi*f1 / 1250
-r = 0.95
+    // filtro para f1 de x_2
+    if k==1
+        y3_1(k) = x_2(k);
+        y3_2(k) = y3_1(k);
+        y3_3(k) = y3_2(k);
+    end
+    if k==2
+        y3_1(k) = x_2(k)+C1*y3_1(k-1);
+        y3_2(k) = y3_1(k)+C1*y3_2(k-1);
+        y3_3(k) = y3_2(k)+C1*y3_3(k-1);
+    end
+    if k>=3
+        y3_1(k) = x_2(k)-x_2(k-2)+C1*y3_1(k-1)-0.9025*y3_1(k-2);
+        y3_2(k) = y3_1(k)-y3_1(k-2)+C1*y3_2(k-1)-0.9025*y3_2(k-2);
+        y3_3(k) = y3_2(k)-y3_2(k-2)+C1*y3_3(k-1)-0.9025*y3_3(k-2);
+    end
 
-H(k) = (1-k^-2)/1-2*r*cos(w_0)*k^-1+r^2*k^-2;
+    // filtro para f1 de x_2
+    if k==1
+        y4_1(k) = x_2(k);
+    end
+    if k==2
+        y4_1(k) = x_2(k) - C2*y4_1(k-1);
+    end
+    if k>=3
+        y4_1(k) = x_2(k)-x_2(k-2)- C2*y4_1(k-1)-0.9025*y4_1(k-2);
+    end
 
-//if k ~= f2
-//    H(k) = ((sin(wc1 * (k - M/2))/ (%pi * (k - M/2))) - (sin(wc2 * (k - M/2)) / %pi * (k - M/2)))
-//else
-//    H(k) = 1 
-//end
     
-
-
 end
 
-X_1 = fft(x_1)
-//Yk_1 = X_1.*Hk1;
-Y_1 = X_1.*H;
-//y_1 = ifft(Yk_1);
-y1 = ifft(Y_1);
-
-//plot(t,y_3)
-plot2d(y1)
-
-
+//plot2d(t,y_1)
+plot2d(t, y3_3)
