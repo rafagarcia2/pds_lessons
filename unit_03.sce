@@ -11,8 +11,8 @@ w2 = 2*%pi*f2;
 // coeficientes 
 r = 0.95;
 
-C1 = 2 * r * cos(2*%pi*f_1/1250);
-C2 = 2 * r * cos(2*%pi*f_2/1250);
+C1 = 2 * r * cos(w1);
+C2 = 2 * r * cos(w2);
 
 //Usaremos agora um laço para simular o comportamento em tempo real do sistema:
 for k=1:7500

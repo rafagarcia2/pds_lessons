@@ -65,14 +65,24 @@ Hk2 = [Hk2 flipdim(Hk2,2)];
 Hk3 = [zeros(1,333) ones(1, 6) zeros(1, 3411)];
 Hk3 = [Hk3 flipdim(Hk3,2)];
 
-//Yk_1 = X_1.*Hk1;
+Yk_1 = X_1.*Hk1;
 Yk_2 = X_1.*Hk2;
 Yk_3 = X_1.*Hk3;
-//y_1 = ifft(Yk_1);
+y_1 = ifft(Yk_1);
 y_2 = ifft(Yk_2);
 y_3 = ifft(Yk_3);
+
+// aplicando para o sinal x_2
+Yk2_1 = X_2.*Hk1;
+Yk2_2 = X_2.*Hk2;
+Yk2_3 = X_2.*Hk3;
+y2_1 = ifft(Yk2_1);
+y2_2 = ifft(Yk2_2);
+y2_3 = ifft(Yk2_3);
+
+
 
 //plot_graph(x_1);
 //t_plot = linspace(0,2500,7500);
 
-plot2d(y_3);
+plot2d(y2_3);
